@@ -5,7 +5,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import SequentialFeatureSelector
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from config import DATA_PATH_X, DATA_PATH_Y, NUM_FEATURES_TO_SELECT, SCORING, RANDOM_STATE
+from config import DATA_PATH_X, DATA_PATH_Y, NUM_FEATURES_TO_SELECT, SCORING, RANDOM_STATE, SELECTED_FEATURES_PATH
 
 # -------------------------
 # Load Data
@@ -48,6 +48,11 @@ selected_features = X_train.columns[sfs.get_support()].tolist()
 print("\nSelected Features:")
 for feat in selected_features:
     print(feat)
+
+# Save selected features to file
+with open(SELECTED_FEATURES_PATH, 'w') as f:
+    for feat in selected_features:
+        f.write(f"{feat}\n")
 
 # Optional: Test accuracy on validation set
 X_val_selected = X_val[selected_features]
