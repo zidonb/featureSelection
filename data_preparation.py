@@ -2,14 +2,12 @@
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_selection import VarianceThreshold
 import os
 
 from config import (
     RANDOM_STATE,
-    SAMPLE_FRACTION,
     APPLY_FEATURE_FILTERING,
     APPLY_SCALING_ENCODING,
     OUTPUT_DIR
@@ -53,26 +51,16 @@ def scale_features(X):
     X_scaled = scaler.fit_transform(X)
     return pd.DataFrame(X_scaled, columns=X.columns)
 
-def stratified_sample(X, y, fraction):
+def prepare_full_data(path_X, path_y):
     """
-    Return a stratified sample of X and y.
-    Ensures the class distribution remains consistent.
-    """
-    splitter = StratifiedShuffleSplit(n_splits=1, test_size=1 - fraction, random_state=RANDOM_STATE)
-    for train_idx, _ in splitter.split(X, y):
-        return X.iloc[train_idx], y[train_idx]
-
-def prepare_data(path_X, path_y):
-    """
-    Full data preparation pipeline:
-    - Load
+    Full data preparation pipeline (excluding sampling/splitting):
+    - Load full dataset
     - Optional filter
     - Optional scale
-    - Stratified sample
-    - Train/validation split
-    
+
     Returns:
-        X_train, X_val, y_train, y_val, feature_names
+        X (DataFrame): Preprocessed full feature set
+        y (array): Labels
     """
     X, y = load_data(path_X, path_y)
 
@@ -82,11 +70,4 @@ def prepare_data(path_X, path_y):
     if APPLY_SCALING_ENCODING:
         X = scale_features(X)
 
-    X_sampled, y_sampled = stratified_sample(X, y, SAMPLE_FRACTION)
-
-    # Split into training and validation sets
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_sampled, y_sampled, test_size=0.2, stratify=y_sampled, random_state=RANDOM_STATE
-    )
-
-    return X_train, X_val, y_train, y_val, X.columns.tolist()
+    return X, y
