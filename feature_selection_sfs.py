@@ -1,11 +1,10 @@
 # feature_selection_simple.py
 
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import SequentialFeatureSelector
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from config import DATA_PATH_X, DATA_PATH_Y, NUM_FEATURES_TO_SELECT, SCORING, RANDOM_STATE, SELECTED_FEATURES_PATH_SFS
+from config import DATA_PATH_X, DATA_PATH_Y, NUM_FEATURES_TO_SELECT, SCORING, RANDOM_STATE, SELECTED_FEATURES_PATH_SFS, MODEL
 
 # -------------------------
 # Load Data
@@ -26,9 +25,7 @@ X_train, X_val, y_train, y_val = train_test_split(
 # Model and SFS
 # -------------------------
 
-model = LogisticRegression(solver='saga', max_iter=1000)
-# You can replace with any other model as needed
-# For example, if using LightGBM:   from lightgbm import LGBMClassifier         
+model = MODEL  # Taken from config.py
 
 sfs = SequentialFeatureSelector(
     model,
