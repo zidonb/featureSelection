@@ -5,7 +5,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import SequentialFeatureSelector
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from config import DATA_PATH_X, DATA_PATH_Y, NUM_FEATURES_TO_SELECT, SCORING, RANDOM_STATE, SELECTED_FEATURES_PATH
+from config import DATA_PATH_X, DATA_PATH_Y, NUM_FEATURES_TO_SELECT, SCORING, RANDOM_STATE, SELECTED_FEATURES_PATH_SFS
 
 # -------------------------
 # Load Data
@@ -26,7 +26,9 @@ X_train, X_val, y_train, y_val = train_test_split(
 # Model and SFS
 # -------------------------
 
-model = LogisticRegression(solver='saga', multi_class='multinomial', max_iter=1000)
+model = LogisticRegression(solver='saga', max_iter=1000)
+# You can replace with any other model as needed
+# For example, if using LightGBM:   from lightgbm import LGBMClassifier         
 
 sfs = SequentialFeatureSelector(
     model,
@@ -49,13 +51,16 @@ print("\nSelected Features:")
 for feat in selected_features:
     print(feat)
 
-# Save selected features to file
-with open(SELECTED_FEATURES_PATH, 'w') as f:
-    for feat in selected_features:
-        f.write(f"{feat}\n")
-
 # Optional: Test accuracy on validation set
 X_val_selected = X_val[selected_features]
 model.fit(X_train[selected_features], y_train)
 y_pred = model.predict(X_val_selected)
-print(f"\nValidation {SCORING}: {accuracy_score(y_val, y_pred):.4f}")
+val_score = accuracy_score(y_val, y_pred)
+print(f"\nValidation {SCORING}: {val_score:.4f}")
+
+# Save validation score and selected features to file
+with open(SELECTED_FEATURES_PATH_SFS, 'w') as f:
+    f.write(f"Validation {SCORING}: {val_score:.4f}\n")
+    f.write("Selected Features:\n")
+    for feat in selected_features:
+        f.write(f"{feat}\n")

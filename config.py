@@ -9,7 +9,7 @@ from lightgbm import LGBMClassifier
 # -------------------------
 
 # Total number of top features to select
-NUM_FEATURES_TO_SELECT = 80
+NUM_FEATURES_TO_SELECT = 55
 
 # Evaluation metric
 SCORING = 'accuracy'  # Or use 'f1_macro', 'balanced_accuracy', etc.
@@ -36,10 +36,10 @@ MODEL = LGBMClassifier(objective='multiclass', n_estimators=50, n_jobs=-1, rando
 # -------------------------
 
 # Path to feature matrix (CSV)
-DATA_PATH_X = "your_X.csv"
+DATA_PATH_X = "data/features.csv"
 
 # Path to label vector (CSV)
-DATA_PATH_Y = "your_y.csv"
+DATA_PATH_Y = "data/targets.csv"
 
 
 # -------------------------
@@ -55,6 +55,8 @@ ITERATION_LOG_PATH = f"{OUTPUT_DIR}/selection_scores.csv"
 # Path to save final selected features
 SELECTED_FEATURES_PATH = f"{OUTPUT_DIR}/selected_features.txt"
 
+# Path to save confusion matrices (if applicable)
+SELECTED_FEATURES_PATH_SFS = f"{OUTPUT_DIR}/selected_features_sfs.txt"
 # Optional: save checkpoints after every N iterations
 CHECKPOINT_EVERY = 5
 
