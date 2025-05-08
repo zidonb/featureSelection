@@ -60,9 +60,10 @@ SELECTED_FEATURES_PATH_SFS = f"{OUTPUT_DIR}/selected_features_sfs.txt"
 # Optional: save checkpoints after every N iterations
 CHECKPOINT_EVERY = 5
 
+ENABLE_RECOVERY = False # Whether to enable recovery from checkpoints
+
 # Whether to apply low-variance and high-correlation filtering
 APPLY_FEATURE_FILTERING = True
 
 # Whether to apply encoding/scaling (recommended for linear models)
 APPLY_SCALING_ENCODING = False
-

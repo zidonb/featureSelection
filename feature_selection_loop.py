@@ -12,7 +12,8 @@ from config import (
     ITERATION_LOG_PATH,
     SELECTED_FEATURES_PATH,
     OUTPUT_DIR,
-    CHECKPOINT_EVERY
+    CHECKPOINT_EVERY,
+    ENABLE_RECOVERY  # <-- Added for recovery control
 )
 from data_preparation import prepare_full_data
 from feature_evaluation import evaluate_feature
@@ -35,6 +36,16 @@ def run_feature_selection(path_X, path_y):
     selected_features = []
     remaining_features = all_features.copy()
 
+    # -------------------------
+    # Recovery logic (NEW)
+    # -------------------------
+    if ENABLE_RECOVERY and os.path.exists(SELECTED_FEATURES_PATH):
+        with open(SELECTED_FEATURES_PATH, 'r') as f:
+            lines = f.read().splitlines()
+        selected_features = [line.strip() for line in lines if line.strip()]
+        remaining_features = [f for f in all_features if f not in selected_features]
+        print(f"[Recovery] Loaded {len(selected_features)} previously selected features. Resuming from there.")
+
     # Prepare CSV log file
     log_columns = ["iteration", "feature", "score", "duration_sec", "conf_matrix_path"]
     if not os.path.exists(ITERATION_LOG_PATH):
@@ -44,7 +55,12 @@ def run_feature_selection(path_X, path_y):
     cm_dir = os.path.join(OUTPUT_DIR, "confusion_matrices")
     os.makedirs(cm_dir, exist_ok=True)
 
-    for iteration in range(1, NUM_FEATURES_TO_SELECT + 1):
+    # -------------------------
+    # Determine starting iteration (NEW)
+    # -------------------------
+    start_iteration = len(selected_features) + 1
+
+    for iteration in range(start_iteration, NUM_FEATURES_TO_SELECT + 1):
         print(f"\n[Iteration {iteration}] Selecting best feature...")
 
         # Dynamically adjust sampling fraction
